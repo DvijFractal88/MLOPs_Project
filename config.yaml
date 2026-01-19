@@ -1,0 +1,7 @@
+path:
+  csv_raw_file: "data\\raw\\Telco-Customer-Churn.csv"
+  csv_processed_file: "data\\processed\\data_for_training.csv"
+
+test_size: 0.2x
+mlflow_experiment_name: "telco_churn_experiment"
+ml_tracing_url: "http://localhost:5000"
