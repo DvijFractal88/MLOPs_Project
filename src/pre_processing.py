@@ -3,21 +3,33 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from utils import Core_Operations
+from sklearn.preprocessing import LabelEncoder
 
 
 class DataPreProcessing:
 
     def preprocess_data(self, df: pd.DataFrame, target_col: str = "Churn") -> pd.DataFrame:
         df.columns = df.columns.str.strip()  # Remove leading/trailing whitespace
-        
+        df = df.drop_duplicates(keep='last')
         binary_col_list = ["gender", "Partner", "Dependents", "PhoneService", "PaperlessBilling"]
         NUMERIC_COLS = ["tenure", "MonthlyCharges", "TotalCharges"]
-        Multiple_col_list = ["MultipleLines", "InternetService", "OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport","StreamingTV","StreamingMovies","Contract","PaymentMethod"]
+        Multiple_col_list = ["OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport","Contract","PaymentMethod"]
         
+        service_col=["StreamingTV","StreamingMovies","InternetService","MultipleLines"]
+        df["n_services"] = (df[service_col] == "Yes").sum(axis=1)
+
+        for col in service_col:
+            if col in df.columns:
+                df = df.drop(columns=[col])
+        # df = df.drop(columns=["gender","Partner"])
          # drop ids if present
         for col in ["customerID", "CustomerID", "customer_id"]:
             if col in df.columns:
                 df = df.drop(columns=[col])
+
+        # Drop the original redundant dummies
+        # drop_cols = [col for col in df.columns if 'No internet service' in col]
+        # df = df.drop(columns=drop_cols)
         
         # target to 0/1 if it's Yes/No
         if target_col in df.columns and df[target_col].dtype == "object":
@@ -28,16 +40,15 @@ class DataPreProcessing:
             if c in df.columns:
             # Convert to numeric, replacing invalid values with NaN
                 df[c] = pd.to_numeric(df[c], errors="coerce")
-        # if "TotalCharges" in df.columns:
-        #     df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
-        
         
         valid_columns_binary = [col for col in binary_col_list if col in df.columns]
         df[valid_columns_binary] = df[valid_columns_binary].replace({'Yes':1, 'No':0, 'Male': 1, 'Female': 0 }).astype(int)
 
         
         valid_columns_multi = [col for col in Multiple_col_list if col in df.columns]
-        df = pd.get_dummies(df,columns=valid_columns_multi, drop_first= True)
+        label_encoder = LabelEncoder()
+        for col in valid_columns_multi:
+            df[col] = label_encoder.fit_transform(df[col])
 
         #convert all bool col to int
         bool_cols_list = df.select_dtypes(include='bool').columns
@@ -65,7 +76,7 @@ class DataPreProcessing:
         y = df[target_col]  # The target column
         
         # Split the dataset into train and test sets
-        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=12,stratify=y)
         
         # Return the splits
         return x_train, y_train, x_test, y_test

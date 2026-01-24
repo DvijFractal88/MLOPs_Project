@@ -1,7 +1,12 @@
 import os
 import optuna
 import mlflow
+import pandas as pd
 from xgboost import XGBClassifier
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+import mlflow.lightgbm
+import lightgbm as lgb
 from data_ingestion import DataIngestion
 from pre_processing import DataPreProcessing
 from utils import Core_Operations
@@ -20,10 +25,10 @@ from sklearn.metrics import recall_score
 
 class ChurnModelPipeline:
 
-    def __init__(self, experiment_name="telco_churn_optimization_DB"):
+    def __init__(self, experiment_name="telco_churn_optimization_DB_1"):
         mlflow.set_tracking_uri("http://127.0.0.1:5000/")
         self.experiment_name = experiment_name
-        self.model_name = "TelcoChurnModel-DB"  # Define the Registry Name
+        self.model_name = "TelcoChurnModel-DB-LGB"  # Define the Registry Name
        
         # Ensure experiment exists
         experiment = mlflow.get_experiment_by_name(experiment_name)
@@ -59,23 +64,86 @@ class ChurnModelPipeline:
         }
 
     def objective(self, trial, X_train, y_train, X_test, y_test, base_scale_pos_weight):
+        # ========Random forest param =======
+        # param = { 
+        #      # 1. Trees: Unlike XGBoost, more trees rarely hurt (just slower) 
+        #     'n_estimators': trial.suggest_int('n_estimators', 100, 2000), 
+        #     # 2. Depth: Crucial for overfitting. # If None, it memorizes the training set (bad). Limit it. 
+        #     'max_depth': trial.suggest_int('max_depth', 5, 35), 
+        #     # 3. Split Rules: Larger numbers = Simpler/Smoother trees (Less overfitting) 
+        #     'min_samples_split': trial.suggest_int('min_samples_split', 2, 30), 
+        #     'min_samples_leaf': trial.suggest_int('min_samples_leaf', 3, 15), 
+        #     # 4. Features: How many features to look at per split? # 'sqrt' is standard, but tuning it helps. 
+        #     'max_features': trial.suggest_categorical('max_features', ['sqrt', 'log2']), 
+        #     # 5. Imbalance Handling (Built-in!) # 'balanced' automatically weights classes inversely to frequency 
+        #     'class_weight': trial.suggest_categorical('class_weight', ['balanced', 'balanced_subsample']), 
+        #     'criterion': trial.suggest_categorical('criterion', ['gini', 'entropy']), 
+        #     'random_state': 22, 
+        #     'n_jobs': -1 # Use all CPU cores 
+        # }  
+        
+        
+        # ======== XG_boost param -======
+        # param = {
+        #     'n_estimators': trial.suggest_int('n_estimators', 300, 1800),
+        #     'max_depth': trial.suggest_int('max_depth', 3, 8),
+        #     'learning_rate': trial.suggest_float('learning_rate', 0.00001, 0.001),
+        #     'subsample': trial.suggest_float('subsample', 0.6, 1.0),
+        #     'colsample_bytree': trial.suggest_float('colsample_bytree', 0.6, 1.0),
+        #     'gamma': trial.suggest_float('gamma', 0, 5),
+        #     'scale_pos_weight': trial.suggest_float('scale_pos_weight', base_scale_pos_weight * 1.2, base_scale_pos_weight * 3),
+        #     'objective': 'binary:logistic',
+        #     'tree_method': 'hist',
+        #     'random_state': 22,
+        #     'n_jobs': -1
+        # }
+
+        # ========== LGB Classifer ============
         param = {
-            'n_estimators': trial.suggest_int('n_estimators', 200, 1000),
-            'max_depth': trial.suggest_int('max_depth', 3, 10),
-            'learning_rate': trial.suggest_float('learning_rate', 0.001, 0.01),
-            'subsample': trial.suggest_float('subsample', 0.6, 1.0),
-            'colsample_bytree': trial.suggest_float('colsample_bytree', 0.6, 1.0),
-            'gamma': trial.suggest_float('gamma', 0, 5),
-            'scale_pos_weight': trial.suggest_float('scale_pos_weight', base_scale_pos_weight * 0.5, base_scale_pos_weight * 1.2),
-            'objective': 'binary:logistic',
-            'tree_method': 'hist',
-            'random_state': 42,
-            'n_jobs': -1
+            'objective': 'binary',
+            'metric': 'auc',
+            'verbosity': -1,
+            'boosting_type': 'gbdt',
+           
+            # 1. Leaf-wise control (Crucial for LGBM)
+            # num_leaves should be < 2^(max_depth)
+            'num_leaves': trial.suggest_int('num_leaves', 20, 150),
+            'max_depth': trial.suggest_int('max_depth', 3, 15),
+           
+            # 2. Regularization (Prevents overfitting on small Telco data)
+            'lambda_l1': trial.suggest_float('lambda_l1', 1e-8, 10.0, log=True),
+            'lambda_l2': trial.suggest_float('lambda_l2', 1e-8, 10.0, log=True),
+           
+            # 3. Sampling
+            'feature_fraction': trial.suggest_float('feature_fraction', 0.4, 1.0),
+            'bagging_fraction': trial.suggest_float('bagging_fraction', 0.4, 1.0),
+            'bagging_freq': trial.suggest_int('bagging_freq', 1, 7),
+           
+            # 4. Learning
+            'learning_rate': trial.suggest_float('learning_rate', 0.0005, 0.02, log=True),
+            'n_estimators': trial.suggest_int('n_estimators', 100, 3000),
+           
+            # 5. Imbalance
+            'is_unbalance': True,  # LGBM's built-in handling
         }
 
-        with mlflow.start_run(nested=True, run_name=f"Trial_{trial.number}"):
-            model = XGBClassifier(**param)
-            model.fit(X_train, y_train)
+        with mlflow.start_run(nested=True, run_name=f"Trial_LGB_{trial.number}"):
+            # model = XGBClassifier(**param)
+            # model = RandomForestClassifier(**param)
+            model = lgb.LGBMClassifier(**param)
+            callbacks = [lgb.early_stopping(stopping_rounds=50, verbose=False)]
+            model.fit(
+                X_train, y_train,
+                eval_set=[(X_test, y_test)],
+                eval_metric="auc",
+            )
+            # model.fit(X_train, y_train)
+            importance = model.feature_importances_
+            feature_imp_df = pd.DataFrame({
+                "feature_name": X_train.columns,
+                "feature_imp": importance
+            })
+            print("Feature importance =======> ",feature_imp_df)
             preds = model.predict(X_test)
             probs = model.predict_proba(X_test)[:, 1] # Probability for ROC_AUC
             # Calculate ALL metrics
@@ -102,8 +170,11 @@ class ChurnModelPipeline:
         self.train_and_register(study.best_params, X_train, y_train, X_test, y_test, full_data)
 
     def train_and_register(self, params, X_train, y_train, X_test, y_test, full_data):
-        with mlflow.start_run(run_name="Champion_Model_Candidate") as run:
-            model = XGBClassifier(**params)
+        with mlflow.start_run(run_name="Champion_Model_Candidate_LGB") as run:
+            
+            # model = XGBClassifier(**params) 
+            # model = RandomForestClassifier(**params)
+            model = lgb.LGBMClassifier(**params)
             model.fit(X_train, y_train)
            
             preds = model.predict(X_test)
@@ -119,13 +190,26 @@ class ChurnModelPipeline:
             mlflow.log_input(train_ds, context="training")
            
             signature = infer_signature(X_test, preds)
-            model_info = mlflow.xgboost.log_model(
-                xgb_model=model,
+            # model_info = mlflow.sklearn.log_model(
+            #     sk_model=model,
+            #     artifact_path="model",
+            #     signature=signature,
+            #     registered_model_name=self.model_name
+            # )
+
+            model_info = mlflow.lightgbm.log_model(
+                lgb_model=model,
                 artifact_path="model",
                 signature=signature,
                 registered_model_name=self.model_name
             )
            
+            # model_info = mlflow.xgboost.log_model(
+            #     xgb_model=model,
+            #     artifact_path="model",
+            #     signature=signature,
+            #     registered_model_name=self.model_name
+            # )
             print(f"Candidate Model Registered. Metrics: {metrics}")
            
             # Pass the ROC_AUC to the promotion logic
@@ -166,6 +250,7 @@ class ChurnModelPipeline:
         if new_score > prod_score:
             print(">>> IMPROVEMENT DETECTED. Promoting.")
             self.promote_to_production(new_version)
+            self.export_model()
         else:
             print(f">>> NO IMPROVEMENT in {DECISION_METRIC}. Keeping in Staging.")
             self.client.transition_model_version_stage(
@@ -186,9 +271,9 @@ class ChurnModelPipeline:
     
 
     def export_model(self):
-        MODEL_NAME = "TelcoChurnModel-DB"
+        MODEL_NAME = "TelcoChurnModel-DB-LGB"
         STAGE = "Production"
-        EXPORT_FOLDER = "./my_production_model"
+        EXPORT_FOLDER = "./my_production_model_lgb"
         ZIP_FILENAME = "production_model_pack"
         print(f"--- Looking for '{STAGE}' model: {MODEL_NAME} ---")
 
@@ -223,5 +308,5 @@ class ChurnModelPipeline:
 
 if __name__ == "__main__":
     pipeline = ChurnModelPipeline()
-    # pipeline.run_pipeline(n_trials=10)
-    pipeline.export_model()
+    pipeline.run_pipeline(n_trials=70)
+    # pipeline.export_model()

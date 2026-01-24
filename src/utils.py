@@ -18,6 +18,6 @@ class Core_Operations:
     def save_to_csv_file(self, df: pd.DataFrame):
         config = self.load_config()
         try:
-            df.to_csv(config["path"]["csv_processed_file"])
+            df.to_csv(config["path"]["csv_processed_file"],index=False)
         except Exception as e:
             print("CSv file is not generated: {e}")
