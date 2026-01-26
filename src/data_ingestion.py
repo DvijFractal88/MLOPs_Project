@@ -8,7 +8,7 @@ class DataIngestion:
 
     def load_processed_csv_file(self):
         config = Core_Operations().load_config()
-        csv_file_path = config["path"]["csv_processed_file"]
+        csv_file_path = config["data"]["csv_processed_file"]
         data = None
         try:
             data = pd.read_csv(csv_file_path)
@@ -18,7 +18,7 @@ class DataIngestion:
     
     def load_raw_csv_file(self):
         config = Core_Operations().load_config()
-        csv_file_path = config["path"]["csv_raw_file"]
+        csv_file_path = config["data"]["csv_raw_file"]
         data = None
         try:
             data = pd.read_csv(csv_file_path)

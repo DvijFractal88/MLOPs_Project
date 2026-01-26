@@ -1,7 +1,79 @@
-path:
+data:
   csv_raw_file: "data\\raw\\Telco-Customer-Churn.csv"
   csv_processed_file: "data\\processed\\data_for_training.csv"
 
-test_size: 0.15
-mlflow_experiment_name: "telco_churn_experiment"
-ml_tracing_url: "http://localhost:5000"
+test_size: 0.20
+random_state: 12
+
+
+mlflow_experiment_name: "telco_churn_experiment_DB_v26"
+model_name: "telco_chrun_model"
+
+ml_tracing_url: "sqlite:///mlflow.db"
+models_to_evaluate: ["logistic_regression", "lightgbm", "xgboost", "random_forest"]  
+optuna:
+  n_trials: 2
+  metric: "roc_auc"
+  direction: "maximize"
+
+# 1. LightGBM Configuration
+lightgbm:
+  params:
+    objective: "binary"
+    metric: "auc"
+    verbosity: -1
+    boosting_type: "gbdt"
+    is_unbalance: True
+  search_space:
+    num_leaves: [20, 150]
+    max_depth: [3, 15]
+    learning_rate: [0.0005, 0.02]
+    n_estimators: [100, 3000]
+    lambda_l1: [0.00000001, 10.0]
+    lambda_l2: [0.00000001, 10.0]
+    feature_fraction: [0.4, 1.0]
+    bagging_fraction: [0.4, 1.0]
+    bagging_freq: [1, 7]
+
+
+# 2. XGBoost Configuration
+xgboost:
+  params:
+    objective: "binary:logistic"
+    tree_method: "hist"
+    eval_metric: "auc"
+    n_jobs: -1
+  search_space:
+    n_estimators: [300, 1800]
+    max_depth: [3, 10]
+    learning_rate: [0.00001, 0.001]
+    subsample: [0.6, 1.0]
+    colsample_bytree:  [0.6, 1.0]
+    gamma: [0, 5]
+    scale_pos_weight_multipliers: [1.2, 3.0]
+
+
+# 3. Random Forest Configuration
+random_forest:
+  params:
+    n_jobs: -1
+    random_state: 21
+  search_space:
+    n_estimators: [100, 1000]
+    max_depth: [5, 35]
+    min_samples_split: [2, 20]
+    min_samples_leaf: [3,15]
+    max_features: ["sqrt","log2"]
+    class_weight: ["balanced", "balanced_subsample"]
+    criterion: ['gini', 'entropy']
+
+logistic_regression:
+  params:
+    solver: "saga"
+    max_iter: 5000 # Increased because saga needs more iterations
+    random_state: 42
+  search_space:
+    C: [0.001, 10.0] # Strength of regularization
+    penalty: ["l1", "l2", "elasticnet"] # Lasso vs Ridge vs Mix
+    l1_ratio: [0.0, 1.0] # Only used if penalty='elasticnet'
+
