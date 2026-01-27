@@ -1,6 +1,6 @@
 data:
-  csv_raw_file: "data\\raw\\Telco-Customer-Churn.csv"
-  csv_processed_file: "data\\processed\\data_for_training.csv"
+  csv_raw_file: "data/raw/Telco-Customer-Churn.csv"
+  csv_processed_file: "data/processed/data_for_training.csv"
 
 test_size: 0.20
 random_state: 12

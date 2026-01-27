@@ -53,11 +53,11 @@ class ChurnModelPipeline:
         is_valid, failed = validate_telco_data(raw_data)
         if not is_valid:
             raise ValueError(f"Data validation failed: {failed}")
-        
-        processed_data = DataPreProcessing().preprocess_data(raw_data)
+        preprocessor = DataPreProcessing()
+        processed_data = preprocessor.preprocess_data(raw_data)
         Core_Operations().save_to_csv_file(processed_data)
         # data = DataIngestion().load_processed_csv_file()
-        preprocessor = DataPreProcessing()
+        
         x_train, y_train, x_test, y_test = preprocessor.training_testing_data(processed_data)
         joblib.dump(preprocessor, f"{self.temp_artifact_dir}/preprocessor.pkl")
         self.scale_pos_weight = (y_train == 0).sum() / (y_train == 1).sum()
