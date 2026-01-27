@@ -12,7 +12,7 @@ model_name: "telco_chrun_model"
 ml_tracing_url: "sqlite:///mlflow.db"
 models_to_evaluate: ["logistic_regression", "lightgbm", "xgboost", "random_forest"]  
 optuna:
-  n_trials: 2
+  n_trials: 10
   metric: "roc_auc"
   direction: "maximize"
 
@@ -25,7 +25,7 @@ lightgbm:
     boosting_type: "gbdt"
     is_unbalance: True
   search_space:
-    num_leaves: [20, 150]
+    num_leaves: [20, 200]
     max_depth: [3, 15]
     learning_rate: [0.0005, 0.02]
     n_estimators: [100, 3000]
@@ -44,7 +44,7 @@ xgboost:
     eval_metric: "auc"
     n_jobs: -1
   search_space:
-    n_estimators: [300, 1800]
+    n_estimators: [300, 2000]
     max_depth: [3, 10]
     learning_rate: [0.00001, 0.001]
     subsample: [0.6, 1.0]
@@ -59,7 +59,7 @@ random_forest:
     n_jobs: -1
     random_state: 21
   search_space:
-    n_estimators: [100, 1000]
+    n_estimators: [200, 1000]
     max_depth: [5, 35]
     min_samples_split: [2, 20]
     min_samples_leaf: [3,15]
@@ -70,7 +70,7 @@ random_forest:
 logistic_regression:
   params:
     solver: "saga"
-    max_iter: 5000 # Increased because saga needs more iterations
+    max_iter: 6000 # Increased because saga needs more iterations
     random_state: 42
   search_space:
     C: [0.001, 10.0] # Strength of regularization
