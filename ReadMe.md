@@ -169,4 +169,4 @@ JSON
   - Automatically generate the Docker image.
   - Test the model on the Linux server at IP `8100`.
 
-## Link of the document which has screenshots: (https://docs.google.com/document/d/1baWKBpRYAg-5dSdn7buIw7OyDmt63iWFPRvV8H36WW4/edit?usp=sharing)
+### Link of the document which has screenshots: (https://docs.google.com/document/d/1baWKBpRYAg-5dSdn7buIw7OyDmt63iWFPRvV8H36WW4/edit?usp=sharing)
