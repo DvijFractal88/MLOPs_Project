@@ -1,0 +1,39 @@
+artifact_path: file:///C:/Users/dvijesh.bhatt/Desktop/MLOPs_Project/mlruns/1/models/m-312c26e7b7384d509e1b2588ce506637/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.4
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+is_signature_from_type_hint: false
+mlflow_version: 3.8.1
+model_id: m-312c26e7b7384d509e1b2588ce506637
+model_size_bytes: 10299602
+model_uuid: m-312c26e7b7384d509e1b2588ce506637
+prompts: null
+run_id: e15aa584e42c48ea9cbc81b4386d2dc7
+signature:
+  inputs: '[{"type": "long", "name": "gender", "required": true}, {"type": "long",
+    "name": "SeniorCitizen", "required": true}, {"type": "long", "name": "Partner",
+    "required": true}, {"type": "long", "name": "Dependents", "required": true}, {"type":
+    "double", "name": "tenure", "required": true}, {"type": "long", "name": "PhoneService",
+    "required": true}, {"type": "long", "name": "OnlineSecurity", "required": true},
+    {"type": "long", "name": "OnlineBackup", "required": true}, {"type": "long", "name":
+    "DeviceProtection", "required": true}, {"type": "long", "name": "TechSupport",
+    "required": true}, {"type": "long", "name": "Contract", "required": true}, {"type":
+    "long", "name": "PaperlessBilling", "required": true}, {"type": "long", "name":
+    "PaymentMethod", "required": true}, {"type": "double", "name": "MonthlyCharges",
+    "required": true}, {"type": "double", "name": "TotalCharges", "required": true},
+    {"type": "long", "name": "n_services", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-01-27 02:47:29.047212'

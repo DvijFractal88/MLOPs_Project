@@ -11,12 +11,12 @@ import pandas as pd
 app = FastAPI(title="Telco Churn Prediction API", version="2.0")
 
 # 2. Global Model Service Loading
-print("⏳ Initializing Model Service...")
+print("Initializing Model Service...")
 try:
     model_service = ModelService()
-    print("✅ Model Service Ready!")
+    print("Model Service Ready!")
 except Exception as e:
-    print(f"⚠️ Warning: Could not load model on startup. Train a model first. Error: {e}")
+    print(f"Warning: Could not load model on startup. Train a model first. Error: {e}")
     model_service = None
 
 # 3. Custom Error Handling for Clear Validation Messages
@@ -113,7 +113,7 @@ def predict(customer: CustomerData):
 # --- ENDPOINT 3: TRAIN ---
 def run_training_task():
     """Background task to run training"""
-    print("🔄 Background Training Started...")
+    print("Background Training Started...")
     try:
         pipeline = ChurnModelPipeline()
         pipeline.run_pipeline()
@@ -121,9 +121,9 @@ def run_training_task():
         # Reload the service with new model
         global model_service
         model_service = ModelService()
-        print("✅ Training Complete & Service Reloaded.")
+        print("Training Complete & Service Reloaded.")
     except Exception as e:
-        print(f"❌ Training Failed: {e}")
+        print(f"Training Failed: {e}")
 
 @app.post("/train")
 def trigger_training(background_tasks: BackgroundTasks):
