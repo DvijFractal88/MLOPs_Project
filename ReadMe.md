@@ -64,7 +64,7 @@ Follow these phases to execute the full pipeline.
 * 5. Verify in MLflow Open the UI to inspect runs, compare accuracy/AUC, and view artifacts.
 
 ```bash mlflow ui --backend-store-uri sqlite:///mlflow.db ```
-# Access at [http://127.0.0.1:5050](http://127.0.0.1:5050)
+### Access at [http://127.0.0.1:5050](http://127.0.0.1:5050)
 
 ## Model Lifecycle (Promotion)
 Register: In the MLflow UI, select your best run and click "Register Model". Name it telco_churn_model.
@@ -168,3 +168,5 @@ JSON
 - Execute the `deploy.py` file to:
   - Automatically generate the Docker image.
   - Test the model on the Linux server at IP `8100`.
+
+## Link of the document which has screenshots: (https://docs.google.com/document/d/1baWKBpRYAg-5dSdn7buIw7OyDmt63iWFPRvV8H36WW4/edit?usp=sharing)
