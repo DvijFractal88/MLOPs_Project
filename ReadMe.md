@@ -134,3 +134,37 @@ JSON
 }
 
 ### Use this using swagger UI means http://localhost:8100/docs
+
+### steps to execute:
+# Model Training and Deployment Workflow
+
+## 1. Upload the Data
+- Place the raw data in the `data/raw` folder.
+
+## 2. Train the Model
+- Run the `train.py` file to:
+  - Perform data preprocessing
+  - Validate the data
+  - Tune hyperparameters
+  - Train the model
+- Track the entire training process using **MLflow** locally (due to conflicts with other users).
+
+## 3. Model Prediction and Serving
+- Use the `serving.py` file to check the predictions from the trained model.
+- Select the best model based on performance metrics.
+
+## 4. Export the Best Model
+- Export the model with the highest **AUC-ROC** score.
+- Manually change the model stage from `None` → `Staging` → `Production` → `Archive`.  
+  *(Note: The code for this stage has been removed but can be found in the Git version history.)*
+
+## 5. Export Model for Docker
+- The `export_model.py` file will:
+  - Generate the `docker_model/` folder.
+  - Only the best model will be moved to the folder.
+- Transfer the model to the **Linux server**, as Docker is hosted there.
+
+## 6. Docker Image Creation and Deployment
+- Execute the `deploy.py` file to:
+  - Automatically generate the Docker image.
+  - Test the model on the Linux server at IP `8100`.
