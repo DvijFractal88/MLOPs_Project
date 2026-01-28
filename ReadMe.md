@@ -170,3 +170,16 @@ JSON
   - Test the model on the Linux server at IP `8100`.
 
 ### Link of the document which has screenshots: (https://docs.google.com/document/d/1baWKBpRYAg-5dSdn7buIw7OyDmt63iWFPRvV8H36WW4/edit?usp=sharing)
+
+## Deploy the model on azure manually using following commandas
+
+- az login
+  - Open browser in window RD (link: https://microsoft.com/devicelogin and paste the code see in terminal) and use login with fractal id
+- az acr create --resource-group dvijesh.bhatt --name telcochurndb --sku Basic --admin-enabled true
+- az acr login --name telcochurndb
+- docker tag telco-churn-api telcochurndb.azurecr.io/telco-churn-api:v1
+- docker push telcochutndb.azurecr.io/telco-churn-api:v1
+
+az container show --resource-group dvijesh.bhatt --name telconchurnacidb --query "ipaddress.fqdn" -o tsv
+
+Check url: 
