@@ -22,7 +22,7 @@ LOCATION = os.getenv("AZURE_LOCATION")
 ACR_NAME = os.getenv("AZURE_ACR_NAME")
 
 # ==========================================
-# 🛠️ HELPER FUNCTIONS
+# HELPER FUNCTIONS
 # ==========================================
 def run_command(command, error_msg="Command failed"):
     """Runs a shell command and stops script if it fails."""
@@ -32,7 +32,7 @@ def run_command(command, error_msg="Command failed"):
         subprocess.check_call(command, shell=True, executable='/bin/bash')
         print("✅ Success.\n")
     except subprocess.CalledProcessError:
-        print(f"❌ ERROR: {error_msg}")
+        print(f"ERROR: {error_msg}")
         sys.exit(1)
 
 def get_acr_password(acr_name, resource_group):
@@ -42,11 +42,11 @@ def get_acr_password(acr_name, resource_group):
         password = subprocess.check_output(cmd, shell=True, executable='/bin/bash').decode('utf-8').strip()
         return password
     except Exception as e:
-        print(f"❌ Failed to get ACR password: {e}")
+        print(f"Failed to get ACR password: {e}")
         sys.exit(1)
 
 # ==========================================
-# 🚀 MAIN PIPELINE
+# MAIN PIPELINE
 # ==========================================
 def main():
     print("🚀 STARTING AUTOMATED DEPLOYMENT PIPELINE (LINUX MODE)\n")
@@ -116,8 +116,7 @@ def main():
     )
     run_command(deploy_cmd, "ACI Deployment Failed.")
 
-    print("\n✅ DEPLOYMENT COMPLETE!")
-    print(f"🌍 Your API is live at: http://{config["deploy"]['DNS_LABEL']}.{config["deploy"]['LOCATION']}.azurecontainer.io:{config["deploy"]['APP_PORT']}/docs")
+    print("\n DEPLOYMENT COMPLETE!")
 
 if __name__ == "__main__":
     main()
