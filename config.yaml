@@ -77,3 +77,16 @@ logistic_regression:
     penalty: ["l1", "l2", "elasticnet"] # Lasso vs Ridge vs Mix
     l1_ratio: [0.0, 1.0] # Only used if penalty='elasticnet'
 
+deploy:
+      # Deployment Settings
+    "RESOURCE_GROUP": "dvijesh.bhatt"
+    "LOCATION": "eastus2"
+    "ACR_NAME": "telcochrundb"                 # Must be unique (lowercase, numbers only)
+    "IMAGE_NAME": "telco-churn-api"
+    "IMAGE_TAG": "v1"
+    "ACI_NAME": "mlopstelcochurnacidb"
+   
+    # Application Settings
+    "APP_PORT": 8100                           # Ensure this matches your Uvicorn port
+    "DNS_LABEL": "telcochurndbmlops"       # Unique DNS name
+
