@@ -182,4 +182,4 @@ JSON
 
 az container show --resource-group dvijesh.bhatt --name telconchurnacidb --query "ipaddress.fqdn" -o tsv
 
-Check url: 
+Check url: (http://telcochrundbmlops.axhdb2ejckbyd6g3.eastus2.azurecontainer.io:8100/docs)
