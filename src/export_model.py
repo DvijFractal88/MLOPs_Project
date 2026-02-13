@@ -80,8 +80,8 @@ try:
         shutil.move(source_prep, dest_prep)
         shutil.rmtree(os.path.join(output_dir, "data")) # Clean up empty folder
        
-    print(f"✅ Export Successful! Files are in '{output_dir}/'")
-    print("   - You can now copy the 'docker_model' folder to Linux.")
+    print(f"Export Successful! Files are in '{output_dir}/'")
+    print(" - You can now copy the 'docker_model' folder to Linux.")
 
 except Exception as e:
     print(f"Export Failed: {e}")

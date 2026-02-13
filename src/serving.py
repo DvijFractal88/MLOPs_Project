@@ -54,16 +54,16 @@ class ModelService:
                
                 try:
                     self.model = mlflow.xgboost.load_model(model_dir)
-                    print("✅ Loaded Native XGBoost Model (Offline)")
+                    print("Loaded Native XGBoost Model (Offline)")
                 except:
                     try:
                         self.model = mlflow.lightgbm.load_model(model_dir)
-                        print("✅ Loaded Native LightGBM Model (Offline)")
+                        print("Loaded Native LightGBM Model (Offline)")
                     except:
                         self.model = mlflow.sklearn.load_model(model_dir)
-                        print("✅ Loaded Native Sklearn Model (Offline)")
+                        print("Loaded Native Sklearn Model (Offline)")
                        
-                print("✅ Service Ready (Offline Mode).")
+                print("Service Ready (Offline Mode).")
             except Exception as e:
                 print(f"Critical Error loading Offline Model: {e}")
             return # Stop here, do not run Online logic

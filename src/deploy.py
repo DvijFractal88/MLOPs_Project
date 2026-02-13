@@ -24,9 +24,9 @@ def run_local_command(command):
     print(f"🔹 [LOCAL] Executing: {command}")
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
-        print(f"❌ Error: {result.stderr}")
+        print(f"Error: {result.stderr}")
         raise Exception("Local command failed")
-    print("✅ Success")
+    print("Success")
 
 def create_ssh_client():
     """Establishes SSH connection to Linux"""
@@ -51,13 +51,13 @@ def execute_remote_command(ssh, command):
        
     exit_status = stdout.channel.recv_exit_status()
     if exit_status != 0:
-        print(f"❌ Remote Error: {stderr.read().decode()}")
+        print(f"Remote Error: {stderr.read().decode()}")
         raise Exception("Remote command failed")
-    print("✅ Remote Success")
+    print("Remote Success")
 
 def deploy():
     print("==========================================")
-    print("🚀 STARTING SECURE DEPLOYMENT PIPELINE")
+    print("STARTING SECURE DEPLOYMENT PIPELINE")
     print("==========================================")
 
     # 1. STEP 1: EXPORT MODEL
@@ -86,7 +86,7 @@ def deploy():
         print("Uploading Model Artifacts...")
         scp.put("docker_model", recursive=True, remote_path=REMOTE_DIR)
        
-    print("✅ Upload Complete.")
+    print("Upload Complete.")
 
     # 4. STEP 4: DOCKER DEPLOY
     print("\n--- Step 4: Building & Deploying Docker Container ---")
@@ -106,8 +106,8 @@ def deploy():
 
     ssh.close()
     print("\n==========================================")
-    print(f"✅ DEPLOYMENT SUCCESSFUL!")
-    print(f"🌍 API is live at: http://{LINUX_HOST}:8100/docs")
+    print(f"DEPLOYMENT SUCCESSFUL!")
+    print(f"API is live at: http://{LINUX_HOST}:8100/docs")
     print("==========================================")
 
 if __name__ == "__main__":

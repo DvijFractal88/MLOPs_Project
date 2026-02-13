@@ -19,7 +19,7 @@ LOCATION = os.getenv("AZURE_LOCATION")
 ACR_NAME = os.getenv("AZURE_ACR_NAME")
 
 if not all([LINUX_HOST, CLIENT_ID, RG_NAME, ACR_NAME]):
-    print("❌ Error: Missing configuration in .env file.")
+    print("Error: Missing configuration in .env file.")
     exit(1)
 
 def create_ssh_client():
@@ -44,13 +44,13 @@ def execute_remote_command(ssh, command, description):
        
     exit_status = stdout.channel.recv_exit_status()
     if exit_status != 0:
-        print(f"❌ Failed: {stderr.read().decode()}")
+        print(f"Failed: {stderr.read().decode()}")
         raise Exception(f"Remote command failed: {description}")
     print("✅ Success")
 
 def create_acr_remotely():
     print("==========================================")
-    print("☁️  CREATING ACR (VIA LINUX SERVER)")
+    print("CREATING ACR (VIA LINUX SERVER)")
     print("==========================================")
    
     ssh = create_ssh_client()
@@ -68,7 +68,7 @@ def create_acr_remotely():
     # execute_remote_command(ssh, rg_cmd, f"Ensuring Resource Group '{RG_NAME}' exists")
 
     # 4. Create ACR
-    # print(f"\n🔹 Creating Registry '{ACR_NAME}'...")
+    # print(f"\n Creating Registry '{ACR_NAME}'...")
     # acr_cmd = (
     #     f'az acr create --resource-group "{RG_NAME}" '
     #     f'--name "{ACR_NAME}" '
@@ -80,7 +80,7 @@ def create_acr_remotely():
 
     ssh.close()
     print("\n==========================================")
-    print(f"✅ ACR CREATED: {ACR_NAME}.azurecr.io")
+    print(f"ACR CREATED: {ACR_NAME}.azurecr.io")
     print("==========================================")
 
 if __name__ == "__main__":

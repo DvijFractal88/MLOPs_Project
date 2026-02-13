@@ -331,7 +331,7 @@ class ChurnModelPipeline:
 
         # 2. TRAIN CHAMPION
         print(f"\n=============================================")
-        print(f"🏆 WINNER: {best_overall_model_name.upper()} (AUC: {best_overall_score:.4f})")
+        print(f"WINNER Model: {best_overall_model_name.upper()} (AUC: {best_overall_score:.4f})")
         print(f"=============================================")
        
         # 2. Train Champion

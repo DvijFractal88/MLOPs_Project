@@ -30,7 +30,7 @@ def run_command(command, error_msg="Command failed"):
     try:
         # shell=True is safe here since we control the inputs
         subprocess.check_call(command, shell=True, executable='/bin/bash')
-        print("✅ Success.\n")
+        print("Success.\n")
     except subprocess.CalledProcessError:
         print(f"ERROR: {error_msg}")
         sys.exit(1)
@@ -49,7 +49,7 @@ def get_acr_password(acr_name, resource_group):
 # MAIN PIPELINE
 # ==========================================
 def main():
-    print("🚀 STARTING AUTOMATED DEPLOYMENT PIPELINE (LINUX MODE)\n")
+    print("STARTING AUTOMATED DEPLOYMENT PIPELINE (LINUX MODE)\n")
 
     # 1. Login to Azure (Service Principal)
     print("--- Step 1: Logging into Azure ---")

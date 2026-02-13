@@ -111,7 +111,7 @@ class DataPreProcessing:
         if is_training:
             print(f"DEBUG: Scaling Columns Found: {cols_to_scale}") # <--- DEBUG PRINT
             if not cols_to_scale:
-                print("🚨 CRITICAL ERROR: No numeric columns found to scale! Scaler will be empty!")
+                print("CRITICAL ERROR: No numeric columns found to scale! Scaler will be empty!")
             else:
                 df[cols_to_scale] = self.scaler.fit_transform(df[cols_to_scale])
         else:
@@ -121,7 +121,7 @@ class DataPreProcessing:
                     df[cols_to_scale] = self.scaler.transform(df[cols_to_scale])
                 except Exception as e:
                     # Fallback for empty scaler (prevent crash, but warn)
-                    print(f"⚠️ Scaler failed (Not Fitted?): {e}")
+                    print(f"Scaler failed (Not Fitted?): {e}")
 
         # data = df.drop(['customerID'],axis=1)
         if is_training:
