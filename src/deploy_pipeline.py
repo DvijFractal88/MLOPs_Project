@@ -71,7 +71,7 @@ def main():
     try:
         run_command(acr_cmd)
     except:
-        print("⚠️ ACR might already exist. Continuing...")
+        print("ACR might already exist. Continuing...")
 
     # 3. Login to ACR (Docker)
     print("--- Step 3: Logging Docker into ACR ---")
