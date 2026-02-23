@@ -21,7 +21,7 @@ if not all([LINUX_HOST, LINUX_USER, LINUX_PASSWORD, REMOTE_DIR]):
 
 def run_local_command(command):
     """Runs a command on the local Windows machine"""
-    print(f"🔹 [LOCAL] Executing: {command}")
+    print(f"[LOCAL] Executing: {command}")
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
         print(f"Error: {result.stderr}")
@@ -30,7 +30,7 @@ def run_local_command(command):
 
 def create_ssh_client():
     """Establishes SSH connection to Linux"""
-    print(f"🔌 Connecting to {LINUX_HOST}...")
+    print(f"Connecting to {LINUX_HOST}...")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(LINUX_HOST, username=LINUX_USER, password=LINUX_PASSWORD)
