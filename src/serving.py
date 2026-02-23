@@ -166,5 +166,5 @@ if __name__ == "__main__":
     }
    
     result = service.predict(sample_customer)
-    print("\n🔮 Prediction Result:")
+    print("\n Prediction Result:")
     print(result)
